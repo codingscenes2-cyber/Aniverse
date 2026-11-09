@@ -93,7 +93,7 @@
       "Open a related title"
     ],
     "expected": "Related anime are sorted by known release year, unknown years appear last, and selecting a relation opens its title dossier."
-  }
+  },
   {
     "name": "Airing calendar and library overview",
     "viewport": "mobile",

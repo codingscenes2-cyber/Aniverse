@@ -1,4 +1,4 @@
-# ANIVERSE Standalone Site — standalone-v1.0.0
+# ANIVERSE Standalone Site — standalone-v1.1.0
 
 A self-contained, single-file anime discovery application.
 
@@ -14,6 +14,8 @@ A self-contained, single-file anime discovery application.
 - Upcoming airing calendar
 - AniList recommendations seeded from the user's first saved title
 - Franchise relation guide ordered by known release year
+- League Hub: global popularity standings, 18 genre divisions, format leagues, seasonal tables, score-tier championships and studio rankings
+- League data cached per browser session
 - No build step or third-party JavaScript dependencies
 
 ## Run
@@ -21,6 +23,9 @@ Open `ANIVERSE-RELEASE.html` in a modern browser with an internet connection. Ca
 
 ## Data and content boundaries
 ANIVERSE is an anime discovery and tracking interface. It does not host, stream, or download anime episodes. External provider links and catalogue metadata are only shown when supplied by AniList. Coverage varies by title. Library data stays in the browser and is not account-synced.
+
+## v1.1.0 refinement
+The League Hub is a ranking and discovery layer over AniList catalogue data, not an official competition. Studio rankings aggregate studios represented in the fetched popular-title sample; score tiers use the fetched top-rated sample, so neither is exhaustive.
 
 ## Release note
 This standalone site is independent of the AppDeploy-hosted React application. It does not replace or automatically deploy the existing live ANIVERSE 3.1 app.

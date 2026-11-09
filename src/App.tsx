@@ -1,24 +1,200 @@
-import {useEffect,useState,type FormEvent} from 'react';
-import {Search,Compass,Flame,CalendarDays,Bookmark,Shuffle,Plus,Check,X,Menu,SlidersHorizontal,Sparkles,ChevronRight,Play} from 'lucide-react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import {
+  Search, Compass, Flame, CalendarDays, Bookmark, Shuffle, Plus, Check, X,
+  Menu, SlidersHorizontal, Sparkles, ChevronRight, Play, Star, Clock3, Tv,
+  Users, Mic2, Clapperboard, Heart, ArrowUpRight, CalendarClock,
+  Minus, ExternalLink, RefreshCw, Filter, BookOpen, Globe2
+} from 'lucide-react';
 import './index.css';
-type Anime={id:number;title:{english?:string;romaji:string;native?:string};coverImage:{large:string;extraLarge:string};bannerImage?:string;description?:string;averageScore?:number;episodes?:number;seasonYear?:number;format?:string;genres:string[]};
-const query='query($page:Int,$perPage:Int,$sort:[MediaSort],$search:String,$genre:String,$season:MediaSeason,$seasonYear:Int){Page(page:$page,perPage:$perPage){media(type:ANIME,isAdult:false,sort:$sort,search:$search,genre:$genre,season:$season,seasonYear:$seasonYear){id title{english romaji native} coverImage{large extraLarge} bannerImage description(asHtml:false) averageScore episodes seasonYear format genres}}}';
-const title=(a:Anime)=>a.title.english||a.title.romaji;
-async function getAnime(v:Record<string,unknown>={}){const r=await fetch('https://graphql.anilist.co',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({query,variables:{page:1,perPage:24,sort:['POPULARITY_DESC'],...v}})});if(!r.ok)throw Error('Anime catalogue is temporarily unavailable.');const j=await r.json();if(j.errors)throw Error(j.errors[0].message);return j.data.Page.media as Anime[]}
-const genres=['Action','Adventure','Comedy','Drama','Fantasy','Horror','Mystery','Romance','Sci-Fi','Slice of Life','Sports','Supernatural'];
-export default function App(){
-const [tab,setTab]=useState('Discover'),[items,setItems]=useState<Anime[]>([]),[trending,setTrending]=useState<Anime[]>([]),[seasonal,setSeasonal]=useState<Anime[]>([]),[search,setSearch]=useState(''),[term,setTerm]=useState(''),[genre,setGenre]=useState(''),[sort,setSort]=useState('POPULARITY_DESC'),[busy,setBusy]=useState(true),[error,setError]=useState(''),[detail,setDetail]=useState<Anime|null>(null),[saved,setSaved]=useState<number[]>(()=>{try{return JSON.parse(localStorage.getItem('aniverse:saved')||'[]')}catch{return[]}}),[menu,setMenu]=useState(false);
-useEffect(()=>{localStorage.setItem('aniverse:saved',JSON.stringify(saved))},[saved]);
-useEffect(()=>{let live=true;setBusy(true);setError('');getAnime({search:term||undefined,genre:genre||undefined,sort:[sort]}).then(x=>{if(live)setItems(x)}).catch(e=>{if(live)setError(e.message)}).finally(()=>{if(live)setBusy(false)});return()=>{live=false}},[term,genre,sort]);
-useEffect(()=>{let live=true;getAnime({sort:['TRENDING_DESC'],perPage:8}).then(x=>{if(live)setTrending(x)}).catch(()=>{});const seasons=['WINTER','SPRING','SUMMER','FALL'];getAnime({sort:['POPULARITY_DESC'],perPage:8,season:seasons[Math.floor(new Date().getMonth()/3)],seasonYear:new Date().getFullYear()}).then(x=>{if(live)setSeasonal(x)}).catch(()=>{});return()=>{live=false}},[]);
-const toggle=(id:number)=>setSaved(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);const list=tab==='My Library'?items.filter(x=>saved.includes(x.id)):tab==='Trending'?trending:tab==='Seasonal'?seasonal:items;
-const submit=(e:FormEvent)=>{e.preventDefault();setTerm(search.trim());setTab('Discover')};const random=()=>{const a=items.length?items:trending;if(a.length)setDetail(a[Math.floor(Math.random()*a.length)])};const nav=(v:string)=>{setTab(v);setMenu(false);setGenre('');setTerm('');setSearch('');setSort(v==='Trending'?'TRENDING_DESC':'POPULARITY_DESC')};const hero=trending[0]||items[0];
-return <div className='shell'><aside className={menu?'sidebar open':'sidebar'}><a className='logo' onClick={()=>nav('Discover')}><b>A</b><span>ANI<span>VERSE</span><small>THE ANIME UNIVERSE</small></span></a><label>YOUR SPACE</label>{['Discover','Trending','Seasonal','My Library'].map((n,i)=><button className={tab===n?'nav active':'nav'} onClick={()=>nav(n)} key={n}>{[<Compass/>,<Flame/>,<CalendarDays/>,<Bookmark/>][i]}{n}{n==='My Library'&&<small>{saved.length}</small>}</button>)}<hr/><label>GENRES</label>{genres.map(g=><button className={genre===g?'genre chosen':'genre'} key={g} onClick={()=>{setGenre(genre===g?'':g);setTab('Discover');setMenu(false)}}>◦　{g}</button>)}<div className='sidefoot'>DISCOVER MORE. FEEL MORE.</div></aside>
-<main><header><button className='hamb' onClick={()=>setMenu(!menu)}><Menu/></button><div className='crumb'>EXPLORE　/　<b>{tab.toUpperCase()}</b></div><form className='search' onSubmit={submit}><Search/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder='Search anime, titles...'/>{search&&<button type='button' onClick={()=>{setSearch('');setTerm('')}}><X/></button>}<kbd>↵</kbd></form><div className='avatar'>A</div></header>
-{tab==='Discover'&&!term&&!genre&&<section className='hero' style={{backgroundImage:hero?.bannerImage?'linear-gradient(90deg,#090a10 2%,#090a10dc 42%,#090a1040),url('+hero.bannerImage+')':''}}><div className='hero-copy'><span className='eyebrow'><i/> THE WORLD OF ANIME, REIMAGINED</span><h1>Find your next<br/><em>obsession.</em></h1><p>Explore thousands of stories. Follow your taste. Discover something unforgettable.</p><div className='actions'><button className='primary' onClick={()=>document.getElementById('catalogue')?.scrollIntoView({behavior:'smooth'})}><Compass/> Explore anime</button><button className='secondary' onClick={random}><Shuffle/> Surprise me</button></div><small>✦ LIVE ANILIST CATALOGUE　 ·　 CURATED DISCOVERY</small></div>{hero&&<div className='featured'>FEATURED PICK<strong>{title(hero)}</strong><span>★　{hero.averageScore?(hero.averageScore/10).toFixed(1):'—'} / 10</span></div>}</section>}
-<div className='content'>{tab==='Discover'&&!term&&!genre&&<section className='moods'><div className='section-head'><div><label>MADE FOR YOUR MOOD</label><h2>Explore your way</h2></div><button className='link' onClick={random}>Feeling lucky? <Shuffle/></button></div><div className='mood-grid'>{[['⚡','Adrenaline rush','Action'],['🌌','Other worlds','Fantasy'],['💗','Heart & soul','Romance'],['🧩','Mind games','Mystery'],['☀️','Feel-good','Comedy'],['🏆','Beyond limits','Sports']].map(([emoji,name,g])=><button className='mood' key={g} onClick={()=>setGenre(g)}><b>{emoji}</b><strong>{name}</strong><small>{g}</small><ChevronRight/></button>)}</div></section>}
-{tab==='Discover'&&!term&&!genre&&<section className='trending'><div className='section-head'><div><label>RIGHT NOW</label><h2>🔥 Trending this moment</h2></div><button className='link' onClick={()=>nav('Trending')}>View all　↗</button></div><div className='rail'>{trending.slice(0,6).map((a,i)=><button className='rail-card' key={a.id} onClick={()=>setDetail(a)}><img src={a.coverImage.large} alt={title(a)}/><b>0{i+1}</b><span>{title(a)}</span></button>)}</div></section>}
-<section id='catalogue'><div className='section-head'><div><label>{tab==='My Library'?'YOUR COLLECTION':tab==='Seasonal'?'WHAT’S AIRING':term?'SEARCH RESULTS':genre?'GENRE EXPLORER':'HANDPICKED FOR THE CURIOUS'}</label><h2>{tab==='My Library'?'Your anime library':tab==='Trending'?'Trending anime':tab==='Seasonal'?'This season':term?'Results for “'+term+'”':genre?genre+' anime':'Discover something great'}</h2></div><div className='tools'><span>{list.length} TITLES</span><label><SlidersHorizontal/><select value={sort} onChange={e=>setSort(e.target.value)}><option value='POPULARITY_DESC'>Most popular</option><option value='SCORE_DESC'>Top rated</option><option value='TRENDING_DESC'>Trending</option><option value='START_DATE_DESC'>Newest</option></select></label></div></div>
-{genre&&<button className='chip' onClick={()=>setGenre('')}>{genre}　×</button>}{busy?<div className='grid'>{Array.from({length:12},(_,i)=><div className='skeleton' key={i}/>)}</div>:error?<div className='empty'><h3>Catalogue unavailable</h3><p>{error}</p><button className='primary' onClick={()=>{setTerm('');setGenre('')}}>Try again</button></div>:list.length===0?<div className='empty'><Sparkles/><h3>{tab==='My Library'?'Your story starts here':'No anime found'}</h3><p>{tab==='My Library'?'Save anime you love and they will appear here.':'Try another title or remove a filter.'}</p><button className='secondary' onClick={()=>nav('Discover')}>Explore anime</button></div>:<div className='grid'>{list.map(a=><article className='anime' key={a.id}><button className='cover' onClick={()=>setDetail(a)}><img src={a.coverImage.extraLarge||a.coverImage.large} alt={title(a)} loading='lazy'/><span>{a.format||'ANIME'}</span><i><Play fill='currentColor'/></i></button><div className='anime-info'><button onClick={()=>setDetail(a)}>{title(a)}</button><div><span>{a.seasonYear||'TBA'} · {a.format||'TV'}</span><b>★ {a.averageScore?(a.averageScore/10).toFixed(1):'—'}</b></div><footer><small>{a.genres.slice(0,2).join(' · ')}</small><button onClick={()=>toggle(a.id)} title='Save to library'>{saved.includes(a.id)?<Check/>:<Plus/>}</button></footer></div></article>)}</div>}</section>
-<footer className='sitefoot'><b>ANIVERSE ✳</b><span>Discover more. Feel more. Anime without limits.</span><small>DATA BY ANILIST</small></footer></div></main>
-{detail&&<div className='overlay' onClick={()=>setDetail(null)}><section className='modal' onClick={e=>e.stopPropagation()}><button className='close' onClick={()=>setDetail(null)}><X/></button><div className='banner' style={{backgroundImage:detail.bannerImage?'linear-gradient(0deg,#11121b,transparent),url('+detail.bannerImage+')':''}}/><div className='detail'><img src={detail.coverImage.extraLarge}/><div><label>ANIME PROFILE · #{detail.id}</label><h2>{title(detail)}</h2><p className='native'>{detail.title.native||detail.title.romaji}</p><div className='stats'><span>★ {detail.averageScore?(detail.averageScore/10).toFixed(1):'N/A'}</span><span>{detail.episodes||'?'} episodes</span><span>{detail.seasonYear||'TBA'}</span></div><div className='tags'>{detail.genres.map(g=><span key={g}>{g}</span>)}</div><p className='description'>{(detail.description||'Synopsis unavailable.').replace(/<br\s*\/?>/gi,' ')}</p><button className='primary' onClick={()=>toggle(detail.id)}>{saved.includes(detail.id)?<Check/>:<Plus/>}{saved.includes(detail.id)?'Saved to library':'Add to my library'}</button></div></div></section></div>}</div>}
+
+type Anime = {
+  id: number;
+  type?: string;
+  title: { english?: string; romaji: string; native?: string };
+  coverImage: { large: string; extraLarge: string };
+  bannerImage?: string;
+  description?: string;
+  averageScore?: number;
+  meanScore?: number;
+  popularity?: number;
+  favourites?: number;
+  episodes?: number;
+  duration?: number;
+  seasonYear?: number;
+  season?: string;
+  format?: string;
+  status?: string;
+  genres: string[];
+  studios?: { nodes: { name: string }[] };
+  startDate?: { year?: number; month?: number; day?: number };
+  nextAiringEpisode?: { episode: number; airingAt: number; timeUntilAiring: number };
+};
+type SavedEntry = { anime: Anime; status: string; progress: number };
+type Person = { id: number; name: { full: string }; image?: { large: string } };
+type Detail = Anime & {
+  characters?: { edges: { role: string; node: Person; voiceActors: Person[] }[] };
+  staff?: { edges: { role: string; node: Person }[] };
+  relations?: { edges: { relationType: string; node: Anime }[] };
+  streamingEpisodes?: { title: string; thumbnail?: string; url: string; site: string }[];
+  nextAiringEpisode?: { episode: number; airingAt: number; timeUntilAiring: number };
+  tags?: { name: string; rank: number }[];
+  externalLinks?: { site: string; url: string; type?: string }[];
+  trailer?: { id: string; site: string; thumbnail?: string };
+  studios?: { nodes: { name: string }[] };
+  source?: string;
+  countryOfOrigin?: string;
+};
+const BASE_FIELDS = 'id title{english romaji native} coverImage{large extraLarge} bannerImage description(asHtml:false) averageScore meanScore popularity favourites episodes duration seasonYear season format status genres studios(isMain:true){nodes{name}} startDate{year month day} nextAiringEpisode{episode airingAt timeUntilAiring}';
+const LIST_QUERY = 'query($page:Int,$perPage:Int,$sort:[MediaSort],$search:String,$genre:String,$season:MediaSeason,$seasonYear:Int,$format:MediaFormat){Page(page:$page,perPage:$perPage){media(type:ANIME,isAdult:false,sort:$sort,search:$search,genre:$genre,season:$season,seasonYear:$seasonYear,format:$format){' + BASE_FIELDS + '}}}';
+const DETAIL_QUERY = 'query($id:Int){Media(id:$id,type:ANIME){' + BASE_FIELDS + ' source countryOfOrigin tags{ name rank } characters(page:1,perPage:12,sort:ROLE){edges{role node{id name{full} image{large}} voiceActors(language:JAPANESE,sort:RELEVANCE){id name{full} image{large}}}} staff(page:1,perPage:10,sort:RELEVANCE){edges{role node{id name{full} image{large}}}} relations{edges{relationType(version:2) node{id type title{english romaji} coverImage{large}}}} streamingEpisodes{title thumbnail url site} externalLinks{site url type} trailer{id site thumbnail}}}';
+const RECOMMEND_QUERY = 'query($id:Int){Media(id:$id,type:ANIME){recommendations(sort:RATING_DESC,perPage:8){nodes{mediaRecommendation{' + BASE_FIELDS + '}}}}}';
+const title = (a: Anime) => a.title.english || a.title.romaji;
+const score = (a: Anime) => a.averageScore ? (a.averageScore / 10).toFixed(1) : '—';
+const safeText = (s?: string) => (s || '').replace(/<[^>]*>/g, ' ').replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();
+async function ani<T>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
+  const response = await fetch('https://graphql.anilist.co', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ query, variables })
+  });
+  if (!response.ok) throw new Error(response.status === 429 ? 'AniList is receiving too many requests. Try again in a moment.' : 'The anime catalogue is temporarily unavailable.');
+  const json = await response.json();
+  if (json.errors?.length) throw new Error(json.errors[0].message || 'AniList returned an error.');
+  return json.data as T;
+}
+async function getAnime(variables: Record<string, unknown> = {}) {
+  const data = await ani<{ Page: { media: Anime[] } }>(LIST_QUERY, { page: 1, perPage: 24, sort: ['POPULARITY_DESC'], ...variables });
+  return data.Page.media;
+}
+const genres = ['Action','Adventure','Comedy','Drama','Fantasy','Horror','Mystery','Romance','Sci-Fi','Slice of Life','Sports','Supernatural','Thriller','Psychological','Music'];
+const navItems = [
+  { label: 'Discover', icon: Compass },
+  { label: 'Trending', icon: Flame },
+  { label: 'Seasonal', icon: CalendarDays },
+  { label: 'My Library', icon: Bookmark }
+];
+const statuses = ['Watching', 'Plan to Watch', 'Completed', 'On Hold', 'Dropped'];
+const seasonNow = () => ['WINTER','SPRING','SUMMER','FALL'][Math.floor(new Date().getMonth() / 3)];
+
+export default function App() {
+  const [tab, setTab] = useState('Discover');
+  const [items, setItems] = useState<Anime[]>([]);
+  const [trending, setTrending] = useState<Anime[]>([]);
+  const [seasonal, setSeasonal] = useState<Anime[]>([]);
+  const [recommendations, setRecommendations] = useState<Anime[]>([]);
+  const [search, setSearch] = useState('');
+  const [term, setTerm] = useState('');
+  const [genre, setGenre] = useState('');
+  const [format, setFormat] = useState('');
+  const [sort, setSort] = useState('POPULARITY_DESC');
+  const [year, setYear] = useState('');
+  const [busy, setBusy] = useState(true);
+  const [error, setError] = useState('');
+  const [detail, setDetail] = useState<Anime | null>(null);
+  const [detailData, setDetailData] = useState<Detail | null>(null);
+  const [detailBusy, setDetailBusy] = useState(false);
+  const [detailError, setDetailError] = useState('');
+  const [saved, setSaved] = useState<Record<number, SavedEntry>>(() => {
+    try { return JSON.parse(localStorage.getItem('aniverse:library:v2') || '{}'); } catch { return {}; }
+  });
+  const [menu, setMenu] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [libraryFilter, setLibraryFilter] = useState('All');
+  const [toast, setToast] = useState('');
+
+  useEffect(() => { localStorage.setItem('aniverse:library:v2', JSON.stringify(saved)); }, [saved]);
+  useEffect(() => {
+    let live = true;
+    setBusy(true); setError('');
+    getAnime({ search: term || undefined, genre: genre || undefined, format: format || undefined, seasonYear: year ? Number(year) : undefined, sort: [sort] })
+      .then(data => { if (live) setItems(data); })
+      .catch(e => { if (live) setError(e.message || 'Could not load anime.'); })
+      .finally(() => { if (live) setBusy(false); });
+    return () => { live = false; };
+  }, [term, genre, format, sort, year]);
+  useEffect(() => {
+    let live = true;
+    getAnime({ sort: ['TRENDING_DESC'], perPage: 10 }).then(data => { if (live) setTrending(data); }).catch(() => {});
+    getAnime({ sort: ['POPULARITY_DESC'], perPage: 10, season: seasonNow(), seasonYear: new Date().getFullYear() })
+      .then(data => { if (live) setSeasonal(data); }).catch(() => {});
+    return () => { live = false; };
+  }, []);
+  useEffect(() => {
+    let live = true;
+    const firstSaved = Object.values(saved)[0]?.anime;
+    if (!firstSaved) { setRecommendations([]); return () => { live = false; }; }
+    ani<{ Media: { recommendations: { nodes: { mediaRecommendation: Anime | null }[] } } }>(RECOMMEND_QUERY, { id: firstSaved.id })
+      .then(data => { if (live) setRecommendations(data.Media.recommendations.nodes.map(n => n.mediaRecommendation).filter((x): x is Anime => Boolean(x))); })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [Object.keys(saved).join(',')]);
+  useEffect(() => {
+    if (!detail) { setDetailData(null); setDetailError(''); return; }
+    let live = true;
+    setDetailBusy(true); setDetailError(''); setDetailData(null);
+    ani<{ Media: Detail }>(DETAIL_QUERY, { id: detail.id })
+      .then(data => { if (live) { setDetailData(data.Media); setDetail((old) => old ? { ...old, ...data.Media } : old); } })
+      .catch(e => { if (live) setDetailError(e.message || 'Could not load title details.'); })
+      .finally(() => { if (live) setDetailBusy(false); });
+    return () => { live = false; };
+  }, [detail?.id]);
+
+  const library = useMemo(() => Object.values(saved), [saved]);
+  const currentList = tab === 'My Library'
+    ? library.filter(entry => libraryFilter === 'All' || entry.status === libraryFilter).map(entry => entry.anime)
+    : tab === 'Trending' ? trending : tab === 'Seasonal' ? seasonal : items;
+  const hero = trending[0] || items[0];
+  const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(''), 2200); };
+  const saveTitle = (anime: Anime, status = 'Plan to Watch') => {
+    setSaved(old => {
+      if (old[anime.id]) { const next = { ...old }; delete next[anime.id]; return next; }
+      return { ...old, [anime.id]: { anime, status, progress: 0 } };
+    });
+    notify(saved[anime.id] ? 'Removed from your library' : 'Added to your library');
+  };
+  const updateEntry = (id: number, patch: Partial<SavedEntry>) => setSaved(old => ({ ...old, [id]: { ...old[id], ...patch } }));
+  const nav = (value: string) => {
+    setTab(value); setMenu(false); setGenre(''); setTerm(''); setSearch(''); setFormat(''); setYear('');
+    setSort(value === 'Trending' ? 'TRENDING_DESC' : 'POPULARITY_DESC');
+  };
+  const submitSearch = (event: FormEvent) => { event.preventDefault(); setTerm(search.trim()); setTab('Discover'); };
+  const surprise = () => {
+    const pool = items.length ? items : trending;
+    if (pool.length) openTitle(pool[Math.floor(Math.random() * pool.length)]);
+  };
+  const openTitle = (anime: Anime) => { setDetail(anime); setMenu(false); };
+  const resetFilters = () => { setGenre(''); setFormat(''); setYear(''); setTerm(''); setSearch(''); };
+  const setGenreFilter = (value: string) => { setGenre(genre === value ? '' : value); setTab('Discover'); };
+  const heroBackground = hero?.bannerImage || hero?.coverImage?.extraLarge || '';
+  const sectionHeading = tab === 'My Library' ? 'Your collection' : tab === 'Trending' ? 'Trending anime' : tab === 'Seasonal' ? 'This season' : term ? 'Search results' : genre ? genre + ' anime' : 'Find your next favourite';
+  const countLabel = tab === 'My Library' ? library.length + ' SAVED' : currentList.length + ' TITLES';
+
+  return (
+    <div className='app-shell'>
+      <aside className={menu ? 'sidebar is-open' : 'sidebar'}>
+        <button className='brand' onClick={() => nav('Discover')}><span className='brand-mark'>A<span>✳</span></span><span className='brand-name'>ANI<span>VERSE</span><small>THE ANIME UNIVERSE</small></span></button>
+        <div className='side-label'>YOUR UNIVERSE</div>
+        <nav className='side-nav'>
+          {navItems.map(item => <button key={item.label} className={tab === item.label ? 'side-link active' : 'side-link'} onClick={() => nav(item.label)}>
+            <item.icon size={17}/><span>{item.label}</span>{item.label === 'My Library' && <b>{library.length}</b>}
+          </button>)}
+        </nav>
+        <div className='side-divider'/>
+        <div className='side-label'>EXPLORE GENRES</div>
+        <div className='genre-list'>{genres.map(g => <button key={g} className={genre === g ? 'genre-pill selected' : 'genre-pill'} onClick={() => setGenreFilter(g)}>{g}</button>)}</div>
+        <div className='sidebar-bottom'><span className='live-dot'/> LIVE ANILIST CATALOGUE</div>
+      </aside>
+
+      <main className='main-area'>
+        <header className='topbar'>
+          <button className='icon-button menu-toggle' onClick={() => setMenu(!menu)} aria-label='Open navigation'><Menu size={19}/></button>
+          <div className='breadcrumb'>ANIVERSE <span>/</span> <b>{tab.toUpperCase()}</b></div>
+          <form className='global-search' onSubmit={submitSearch}><Search size={17}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder='Search anime titles...'/>{search && <button type='button' onClick={() => { setSearch(''); setTerm(''); }}><X size={15}/></button>}<kbd>ENTER</kbd></form>
+          <button className='profile-dot' onClick={() => nav('My Library')} title='Your library'>A</button>
+        </header>
+
+        {tab === 'Discover' && !term && !genre && <section className='hero-panel' style={heroBackground ? { backgroundImage: 'linear-gradient(90deg, #0b0c12 0%, #0b0c12ed 35%, #0b0c1270 72%, #0b0c1270 100%), url(' + heroBackground + ')' } : undefined}>
+          <div className='hero-glow'/>
+          <div className='hero-content'>
+            <div className='eyebrow'><span/> YOUR NEXT GREAT STORY STARTS HERE</div>
+            <h1>Enter a world<br/>of <em>endless stories.</em></h1>

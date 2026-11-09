@@ -7,7 +7,8 @@
       "Open Discover",
       "Wait for AniList catalogue"
     ],
-    "expected": "Anime titles, cover art and scores appear."
+    "expected": "Anime titles, cover art and scores appear.",
+    "sanity": true
   },
   {
     "name": "Search and genre filter",

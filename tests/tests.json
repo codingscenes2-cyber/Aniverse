@@ -1,25 +1,43 @@
 [
   {
-    "name": "Open a title dossier with cast and production details",
+    "name": "Premium home experience and live catalogue signals",
     "sanity": true,
     "viewport": "desktop",
     "covers": [
-      "anime profile details",
-      "main character cast",
-      "Japanese voice actors",
-      "production staff",
-      "studio and metadata",
-      "episode guide",
-      "franchise relations"
+      "cinematic home hero",
+      "live trending count",
+      "seasonal picks count",
+      "personal library count",
+      "responsive editorial layout"
     ],
-    "description": "Verifies a catalogue title opens a rich profile and displays its available credits and episode information.",
+    "description": "Checks the redesigned discovery landing page uses live AniList-backed collections and personal library data.",
     "steps": [
-      "Open Discover",
-      "Open a popular anime title",
-      "Wait for its full title dossier to load",
-      "Review cast, voice actors, staff, studio, episode and relation sections"
+      "Open Discover on desktop",
+      "Wait for trending and seasonal collections to load",
+      "Review the hero, live signal strip, mood shortcuts and trending shelf"
     ],
-    "expected": "The title profile shows synopsis, score, episode count, metadata and any cast, voice actor, staff, episode and franchise details returned by AniList."
+    "expected": "The redesigned home renders without layout errors and shows live counts when AniList collections are available."
+  },
+  {
+    "name": "Browse an anime dossier on mobile",
+    "sanity": true,
+    "viewport": "mobile",
+    "covers": [
+      "mobile title dossier",
+      "anime metadata",
+      "cast and voice actors",
+      "episode guide",
+      "franchise relations",
+      "responsive title details"
+    ],
+    "description": "Checks the redesigned title profile remains readable and scrollable on a phone.",
+    "steps": [
+      "Open the site at a mobile viewport",
+      "Open a popular anime title",
+      "Wait for its title dossier to load",
+      "Scroll through cast, credits, episode guide and relations"
+    ],
+    "expected": "The dossier fits the mobile viewport, remains scrollable and presents available metadata without horizontal overflow."
   },
   {
     "name": "Save an anime and track watch progress",
@@ -63,7 +81,7 @@
     "expected": "The visible catalogue reflects the submitted title search and selected filters and sort order."
   },
   {
-    "name": "Handle an empty search and mobile navigation",
+    "name": "Handle empty search and mobile navigation",
     "viewport": "mobile",
     "covers": [
       "empty search state",
@@ -71,7 +89,7 @@
       "responsive mobile layout",
       "mobile navigation"
     ],
-    "description": "Verifies an unmatched search gives a recoverable empty state and the mobile navigation remains usable.",
+    "description": "Verifies an unmatched search gives a recoverable empty state and mobile navigation remains usable.",
     "steps": [
       "Open the site at a mobile viewport",
       "Search for a deliberately unmatched title",

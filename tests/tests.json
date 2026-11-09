@@ -1,0 +1,45 @@
+[
+  {
+    "name": "Discover catalogue renders",
+    "viewport": "desktop",
+    "description": "Load the homepage and verify live anime cards are visible.",
+    "steps": [
+      "Open Discover",
+      "Wait for AniList catalogue"
+    ],
+    "expected": "Anime titles, cover art and scores appear."
+  },
+  {
+    "name": "Search and genre filter",
+    "viewport": "desktop",
+    "description": "Check title search and genre filtering.",
+    "steps": [
+      "Search for Naruto",
+      "Submit the search",
+      "Select Action genre"
+    ],
+    "expected": "The catalogue updates to matching anime."
+  },
+  {
+    "name": "Save to personal library",
+    "viewport": "desktop",
+    "description": "Check local watchlist persistence.",
+    "steps": [
+      "Bookmark an anime",
+      "Open My Library",
+      "Refresh the page"
+    ],
+    "expected": "Saved anime remains in My Library."
+  },
+  {
+    "name": "Responsive navigation",
+    "viewport": "mobile",
+    "description": "Check mobile menu and responsive catalogue.",
+    "steps": [
+      "Open at a mobile viewport",
+      "Open menu",
+      "Select Seasonal"
+    ],
+    "expected": "Menu opens and seasonal anime view is accessible."
+  }
+]

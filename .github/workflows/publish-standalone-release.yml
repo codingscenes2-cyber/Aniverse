@@ -1,0 +1,50 @@
+name: Publish ANIVERSE standalone release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Git tag to create"
+        required: true
+        default: "standalone-v1.0.0"
+        type: string
+      release_title:
+        description: "GitHub release title"
+        required: true
+        default: "ANIVERSE Standalone Site v1.0.0"
+        type: string
+      prerelease:
+        description: "Mark this release as a prerelease"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@v4
+      - name: Create Git tag and GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ inputs.tag_name }}
+          RELEASE_TITLE: ${{ inputs.release_title }}
+          PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Release/tag already exists: $TAG_NAME"
+            exit 1
+          fi
+          args=(release create "$TAG_NAME" ANIVERSE-RELEASE.html RELEASE-NOTES.md
+            --target "$GITHUB_SHA"
+            --title "$RELEASE_TITLE"
+            --notes-file RELEASE-NOTES.md)
+          if [[ "$PRERELEASE" == "true" ]]; then
+            args+=(--prerelease)
+          fi
+          gh "${args[@]}"

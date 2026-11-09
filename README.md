@@ -17,3 +17,7 @@ npm run dev
 ```
 
 Catalogue data comes from [AniList](https://anilist.co/). Saved titles are stored locally in the browser; account-based sync is not yet included.
+
+## Product release
+
+- [ANIVERSE Product Release & Roadmap](ANIVERSE-RELEASE.html) — standalone release overview covering shipped features, ANIVERSE 3.1 live status, ANIVERSE 3.2 source changes awaiting deployment, architecture, product boundaries, and proposed roadmap.

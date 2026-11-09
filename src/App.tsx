@@ -198,3 +198,117 @@ export default function App() {
           <div className='hero-content'>
             <div className='eyebrow'><span/> YOUR NEXT GREAT STORY STARTS HERE</div>
             <h1>Enter a world<br/>of <em>endless stories.</em></h1>
+            <p>Discover new worlds, unforgettable characters and stories that stay with you long after the credits roll.</p>
+            <div className='hero-actions'><button className='button-primary' onClick={() => document.getElementById('catalogue')?.scrollIntoView({ behavior: 'smooth' })}><Compass size={16}/> Explore anime</button><button className='button-glass' onClick={surprise}><Shuffle size={15}/> Surprise me</button></div>
+            <div className='hero-meta'><span><i/> LIVE ANILIST DATA</span><span>✦ THOUSANDS OF TITLES</span></div>
+          </div>
+          {hero && <button className='hero-feature' onClick={() => openTitle(hero)}><span>FEATURED RIGHT NOW</span><b>{title(hero)}</b><small><Star size={12} fill='currentColor'/> {score(hero)}　·　{hero.format || 'ANIME'}</small></button>}
+          <div className='hero-orb orb-one'/><div className='hero-orb orb-two'/>
+        </section>}
+        {tab === 'Discover' && !term && !genre && <section className='signal-strip' aria-label='ANIVERSE catalogue statistics'>
+          <div><Flame size={19}/><span><b>{trending.length || '—'}</b><small>TRENDING TITLES</small></span></div>
+          <div><CalendarDays size={19}/><span><b>{seasonal.length || '—'}</b><small>SEASONAL PICKS</small></span></div>
+          <div><Bookmark size={19}/><span><b>{library.length}</b><small>IN YOUR LIBRARY</small></span></div>
+        </section>}
+
+        <div className='page-content'>
+          {tab === 'Discover' && !term && !genre && <>
+            <section className='quick-moods'>
+              <div className='section-title'><div><span className='overline'>PICK YOUR VIBE</span><h2>Explore by mood</h2></div><button className='text-link' onClick={surprise}>Surprise me <Shuffle size={14}/></button></div>
+              <div className='mood-row'>
+                {[['⚔️','Adrenaline','Action'],['🌌','Fantasy worlds','Fantasy'],['💞','Heart & soul','Romance'],['🧠','Mind-bending','Psychological'],['☀️','Feel-good','Comedy'],['🏆','Rivalries','Sports']].map(([emoji,label,g]) => <button className='mood-card' key={g} onClick={() => setGenreFilter(g)}><span>{emoji}</span><b>{label}</b><small>{g}</small><ChevronRight size={14}/></button>)}
+              </div>
+            </section>
+            <section className='feature-shelf'>
+              <div className='section-title'><div><span className='overline'>THE COMMUNITY IS WATCHING</span><h2><Flame size={20}/> Trending right now</h2></div><button className='text-link' onClick={() => nav('Trending')}>View all <ArrowUpRight size={14}/></button></div>
+              <div className='trending-strip'>{trending.slice(0,7).map((anime,index) => <button className='trend-card' key={anime.id} onClick={() => openTitle(anime)}><div className='trend-poster'><img src={anime.coverImage.extraLarge || anime.coverImage.large} alt={title(anime)} loading='lazy'/><b>{String(index + 1).padStart(2,'0')}</b><span><Star size={11} fill='currentColor'/> {score(anime)}</span></div><strong>{title(anime)}</strong><small>{anime.format || 'ANIME'} · {anime.seasonYear || 'TBA'}</small></button>)}</div>
+            </section>
+            {recommendations.length > 0 && <section className='feature-shelf'><div className='section-title'><div><span className='overline'>BASED ON YOUR LIBRARY</span><h2><Sparkles size={20}/> More like what you love</h2></div></div><div className='mini-recommendations'>{recommendations.slice(0,6).map(anime => <button key={anime.id} onClick={() => openTitle(anime)}><img src={anime.coverImage.large} alt={title(anime)}/><span><b>{title(anime)}</b><small>★ {score(anime)} · {anime.format || 'ANIME'}</small></span><ChevronRight size={15}/></button>)}</div></section>}
+          </>}
+
+          <section className='catalogue-section' id='catalogue'>
+            <div className='section-title catalogue-heading'><div><span className='overline'>{tab === 'My Library' ? 'YOUR PERSONAL WATCH SPACE' : tab === 'Seasonal' ? 'CURRENT ANIME SEASON' : tab === 'Trending' ? 'POPULAR WITH THE COMMUNITY' : term ? 'ANILIST SEARCH' : genre ? 'GENRE COLLECTION' : 'CURATED FOR THE CURIOUS'}</span><h2>{sectionHeading}</h2></div><div className='catalogue-tools'><span>{countLabel}</span><button className={showFilters ? 'filter-button active' : 'filter-button'} onClick={() => setShowFilters(!showFilters)}><Filter size={14}/> Filters</button><label className='sort-select'><SlidersHorizontal size={14}/><select value={sort} onChange={e => setSort(e.target.value)}><option value='POPULARITY_DESC'>Most popular</option><option value='SCORE_DESC'>Top rated</option><option value='TRENDING_DESC'>Trending</option><option value='FAVOURITES_DESC'>Most favourited</option><option value='START_DATE_DESC'>Newest</option></select></label></div></div>
+            {showFilters && <div className='filter-panel'><label>FORMAT<select value={format} onChange={e => setFormat(e.target.value)}><option value=''>Any format</option><option value='TV'>TV</option><option value='MOVIE'>Movie</option><option value='OVA'>OVA</option><option value='ONA'>ONA</option><option value='SPECIAL'>Special</option></select></label><label>YEAR<select value={year} onChange={e => setYear(e.target.value)}><option value=''>Any year</option>{Array.from({length: 35},(_,i) => new Date().getFullYear() - i).map(y => <option key={y}>{y}</option>)}</select></label><label>GENRE<select value={genre} onChange={e => setGenre(e.target.value)}><option value=''>Any genre</option>{genres.map(g => <option key={g}>{g}</option>)}</select></label><button onClick={resetFilters}>Clear all</button></div>}
+            {tab === 'My Library' && <div className='library-toolbar'><div className='library-count'><Bookmark size={15}/> {library.length} titles saved</div><div className='status-tabs'>{['All',...statuses].map(status => <button key={status} className={libraryFilter === status ? 'selected' : ''} onClick={() => setLibraryFilter(status)}>{status}</button>)}</div></div>}
+            {(genre || term || format || year) && <div className='active-filters'>{[term && 'Search: ' + term,genre,format,year].filter(Boolean).map(value => <button key={value} onClick={() => { if (value === genre) setGenre(''); else if (value === format) setFormat(''); else if (value === year) setYear(''); else { setTerm(''); setSearch(''); } }}>{value} <X size={12}/></button>)}</div>}
+            {busy && tab !== 'Trending' && tab !== 'Seasonal' && tab !== 'My Library' ? <div className='anime-grid'>{Array.from({length:12},(_,i) => <div className='poster-skeleton' key={i}/>)}</div>
+              : error && tab === 'Discover' ? <div className='empty-state'><Sparkles/><h3>We lost the signal</h3><p>{error}</p><button className='button-primary' onClick={() => setTerm('')}>Retry catalogue</button></div>
+              : currentList.length === 0 ? <div className='empty-state'><BookOpen size={28}/><h3>{tab === 'My Library' ? 'Your watch journey starts here' : 'No titles found'}</h3><p>{tab === 'My Library' ? 'Save anime from Discover and build your own collection.' : 'Try another search or remove a filter.'}</p><button className='button-primary' onClick={() => nav('Discover')}>Explore anime</button></div>
+              : <div className='anime-grid'>{currentList.map(anime => <AnimeCard key={anime.id} anime={anime} saved={Boolean(saved[anime.id])} entry={saved[anime.id]} onOpen={() => openTitle(anime)} onSave={() => saveTitle(anime)} onProgress={value => updateEntry(anime.id,{ progress: value })}/>)}</div>}
+          </section>
+          <footer className='footer'><b>ANIVERSE ✳</b><span>Discover more. Feel more. Anime without limits.</span><small>POWERED BY ANILIST</small></footer>
+        </div>
+      </main>
+
+      {detail && <div className='detail-backdrop' onMouseDown={e => { if (e.target === e.currentTarget) setDetail(null); }}>
+        <section className='detail-modal'>
+          <button className='detail-close' onClick={() => setDetail(null)} aria-label='Close title details'><X size={19}/></button>
+          <div className='detail-banner' style={detailData?.bannerImage ? { backgroundImage: 'linear-gradient(0deg,#101119 0%,transparent 100%),url(' + detailData.bannerImage + ')' } : undefined}>
+            <div className='banner-overlay'><span>ANIVERSE TITLE FILE　/　#{detail.id}</span><button onClick={() => saveTitle(detailData || detail)}>{saved[detail.id] ? <Check size={15}/> : <Plus size={15}/>} {saved[detail.id] ? 'In your library' : 'Add to library'}</button></div>
+          </div>
+          <div className='detail-layout'>
+            <div className='detail-poster-wrap'><img className='detail-poster' src={detail.coverImage.extraLarge || detail.coverImage.large} alt={title(detail)}/><div className='poster-score'><Star size={14} fill='currentColor'/> {score(detailData || detail)} <small>ANILIST SCORE</small></div>
+              <button className='detail-save-mobile' onClick={() => saveTitle(detailData || detail)}>{saved[detail.id] ? <Check size={15}/> : <Plus size={15}/>} {saved[detail.id] ? 'Saved' : 'Add to library'}</button>
+            </div>
+            <div className='detail-main'>
+              <div className='detail-kicker'>{detailData?.format || detail.format || 'ANIME'} <span>•</span> {detailData?.status?.replace(/_/g,' ') || detail.status?.replace(/_/g,' ') || 'TITLE PROFILE'}</div>
+              <h2>{title(detailData || detail)}</h2><div className='detail-native'>{detailData?.title.native || detail.title.native || detail.title.romaji}</div>
+              <div className='detail-stats'>
+                <div><Star size={15}/><b>{score(detailData || detail)}</b><small>SCORE</small></div>
+                <div><Tv size={15}/><b>{detailData?.episodes ?? detail.episodes ?? '—'}</b><small>EPISODES</small></div>
+                <div><Clock3 size={15}/><b>{detailData?.duration ?? detail.duration ?? '—'}<small> min</small></b><small>PER EPISODE</small></div>
+                <div><CalendarDays size={15}/><b>{detailData?.seasonYear || detail.seasonYear || 'TBA'}</b><small>YEAR</small></div>
+              </div>
+              <div className='detail-genres'>{(detailData?.genres || detail.genres || []).map(g => <span key={g}>{g}</span>)}</div>
+              {detailBusy && <div className='detail-loading'><span/> Fetching full title dossier from AniList…</div>}
+              {detailError && <div className='detail-error'>{detailError} <button onClick={() => setDetail({ ...detail })}><RefreshCw size={13}/> Retry</button></div>}
+              <div className='detail-block'><h3>Synopsis</h3><p className='synopsis'>{safeText(detailData?.description || detail.description) || 'A synopsis has not been added to the catalogue yet.'}</p></div>
+              <div className='info-grid'>
+                <div><span>RELEASE</span><b>{detailData?.startDate?.year ? [detailData.startDate.year,detailData.startDate.month,detailData.startDate.day].filter(Boolean).join(' / ') : detailData?.seasonYear || detail.seasonYear || 'Unknown'}</b></div>
+                <div><span>SEASON</span><b>{detailData?.season || detail.season || '—'}</b></div>
+                <div><span>SOURCE</span><b>{(detailData?.source || 'Unknown').replace(/_/g,' ')}</b></div>
+                <div><span>COUNTRY</span><b>{detailData?.countryOfOrigin || 'JP'}</b></div>
+                <div><span>STUDIO</span><b>{detailData?.studios?.nodes?.map(s => s.name).join(', ') || 'Not listed'}</b></div>
+                <div><span>POPULARITY</span><b>{detailData?.popularity?.toLocaleString() || '—'}</b></div>
+              </div>
+              {detailData?.nextAiringEpisode && <div className='airing-card'><CalendarClock size={18}/><div><b>Episode {detailData.nextAiringEpisode.episode} is next</b><small>{new Date(detailData.nextAiringEpisode.airingAt * 1000).toLocaleString()} · {Math.max(0,Math.floor(detailData.nextAiringEpisode.timeUntilAiring / 3600))}h remaining</small></div></div>}
+              {detailData?.trailer?.site === 'youtube' && <a className='trailer-link' href={'https://www.youtube.com/watch?v=' + detailData.trailer.id} target='_blank' rel='noreferrer'><Play size={15} fill='currentColor'/> Watch official trailer <ExternalLink size={13}/></a>}
+              <section className='detail-block'><h3><Users size={17}/> Main cast <small>{detailData?.characters?.edges?.length || 0} CHARACTERS</small></h3>
+                {detailData?.characters?.edges?.length ? <div className='people-grid'>{detailData.characters.edges.map(edge => <div className='person-card' key={edge.node.id}><img src={edge.node.image?.large || 'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg'} alt={edge.node.name.full}/><div><b>{edge.node.name.full}</b><small>{edge.role}</small>{edge.voiceActors[0] && <span><Mic2 size={11}/> JP: {edge.voiceActors[0].name.full}</span>}</div></div>)}</div> : !detailBusy && <p className='muted-note'>Cast details are not available for this title.</p>}
+              </section>
+              <section className='detail-block'><h3><Mic2 size={17}/> Japanese voice cast <small>VOICE ACTORS</small></h3>
+                {detailData?.characters?.edges?.filter(e => e.voiceActors[0]).slice(0,8).length ? <div className='voice-list'>{detailData.characters.edges.filter(e => e.voiceActors[0]).slice(0,8).map(edge => <div key={edge.node.id}><span>{edge.node.name.full}</span><b>{edge.voiceActors[0].name.full}</b></div>)}</div> : !detailBusy && <p className='muted-note'>Voice actor credits are not available.</p>}
+              </section>
+              <section className='detail-block'><h3><Clapperboard size={17}/> Production staff <small>KEY CREDITS</small></h3>
+                {detailData?.staff?.edges?.length ? <div className='staff-list'>{detailData.staff.edges.slice(0,8).map(edge => <div key={edge.node.id}><b>{edge.node.name.full}</b><span>{edge.role}</span></div>)}</div> : !detailBusy && <p className='muted-note'>Production credits are not available.</p>}
+              </section>
+              <section className='detail-block'><h3><Play size={17}/> Episode guide <small>{detailData?.episodes || detail.episodes || '?'} EPISODES LISTED</small></h3>
+                {detailData?.streamingEpisodes?.length ? <div className='episode-grid'>{detailData.streamingEpisodes.map((episode,index) => <a key={episode.url} href={episode.url} target='_blank' rel='noreferrer'><img src={episode.thumbnail || detail.coverImage.large} alt=''/><span><b>{episode.title}</b><small>{episode.site} · Episode {index + 1}</small></span><ExternalLink size={13}/></a>)}</div> : <div className='episode-summary'><Tv size={18}/><span><b>{detailData?.episodes || detail.episodes || 'Episode count unavailable'} episodes</b><small>AniList provides the episode count and schedule. Individual episode titles or playable links are shown when the catalogue supplies them.</small></span></div>}
+              </section>
+              {detailData?.relations?.edges?.filter(edge => edge.node.type === 'ANIME').length ? <section className='detail-block'><h3><Heart size={17}/> Franchise connections <small>WATCH ORDER</small></h3><div className='relation-list'>{detailData.relations.edges.filter(edge => edge.node.type === 'ANIME').map(edge => <button key={edge.node.id} onClick={() => openTitle(edge.node)}><img src={edge.node.coverImage.large} alt=''/><span><b>{title(edge.node)}</b><small>{edge.relationType.replace(/_/g,' ')}</small></span><ChevronRight size={15}/></button>)}</div></section> : null}
+              {detailData?.tags?.length ? <section className='detail-block'><h3><Sparkles size={17}/> Themes & tags</h3><div className='tag-cloud'>{detailData.tags.slice(0,16).map(tag => <span key={tag.name}>{tag.name}</span>)}</div></section> : null}
+              {detailData?.externalLinks?.length ? <section className='detail-block'><h3><Globe2 size={17}/> Official & catalogue links</h3><div className='external-links'>{detailData.externalLinks.slice(0,8).map(link => <a key={link.url} href={link.url} target='_blank' rel='noreferrer'>{link.site} <ExternalLink size={12}/></a>)}</div></section> : null}
+              {saved[detail.id] && <section className='watch-progress'><div className='progress-head'><span>YOUR WATCH PROGRESS</span><b>{saved[detail.id].progress} / {detailData?.episodes || detail.episodes || '—'}</b></div><div className='progress-track'><i style={{ width: (detailData?.episodes ? Math.min(100,saved[detail.id].progress / detailData.episodes * 100) : 0) + '%' }}/></div><div className='progress-controls'><label>STATUS<select value={saved[detail.id].status} onChange={e => updateEntry(detail.id,{status:e.target.value})}>{statuses.map(s => <option key={s}>{s}</option>)}</select></label><div><button onClick={() => updateEntry(detail.id,{progress:Math.max(0,saved[detail.id].progress - 1)})}><Minus size={14}/></button><button onClick={() => updateEntry(detail.id,{progress:Math.min(detailData?.episodes || 999,saved[detail.id].progress + 1)})}><Plus size={14}/> Episode watched</button></div></div></section>}
+            </div>
+          </div>
+        </section>
+      </div>}
+      {toast && <div className='toast'><Check size={15}/>{toast}</div>}
+    </div>
+  );
+}
+
+function AnimeCard({ anime, saved, entry, onOpen, onSave, onProgress }: {
+  anime: Anime; saved: boolean; entry?: SavedEntry; onOpen: () => void; onSave: () => void; onProgress: (value: number) => void;
+}) {
+  return <article className='anime-card'>
+    <button className='poster-button' onClick={onOpen}><img src={anime.coverImage.extraLarge || anime.coverImage.large} alt={title(anime)} loading='lazy'/><span className='poster-format'>{anime.format || 'ANIME'}</span><span className='poster-hover'><Play size={20} fill='currentColor'/> VIEW TITLE</span></button>
+    <div className='anime-card-info'>
+      <div className='card-title-row'><button className='card-title' onClick={onOpen}>{title(anime)}</button><button className={saved ? 'save-icon saved' : 'save-icon'} onClick={onSave} title={saved ? 'Remove from library' : 'Add to library'}>{saved ? <Check size={15}/> : <Plus size={15}/>}</button></div>
+      <div className='card-meta'><span>{anime.seasonYear || 'TBA'} · {anime.format || 'TV'}</span><b><Star size={11} fill='currentColor'/> {score(anime)}</b></div>
+      <div className='card-genres'>{anime.genres.slice(0,2).join(' · ') || 'Anime'}</div>
+      <div className='card-bottom'><span><Tv size={12}/> {anime.episodes ? anime.episodes + ' eps' : 'Episodes TBA'}</span>{saved && entry && <><span className='progress-mini'>{entry.progress} watched</span><button className='save-icon' title='Log one watched episode' onClick={() => onProgress(Math.min(anime.episodes || 999, entry.progress + 1))}><Plus size={12}/></button></>}</div>
+      {saved && entry && <div className='card-progress'><i style={{width:(anime.episodes ? Math.min(100,entry.progress / anime.episodes * 100) : 0) + '%'}}/></div>}
+    </div>
+  </article>;
+}

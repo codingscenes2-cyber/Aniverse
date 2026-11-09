@@ -1,46 +1,84 @@
 [
   {
-    "name": "Discover catalogue renders",
+    "name": "Open a title dossier with cast and production details",
+    "sanity": true,
     "viewport": "desktop",
-    "description": "Load the homepage and verify live anime cards are visible.",
+    "covers": [
+      "anime profile details",
+      "main character cast",
+      "Japanese voice actors",
+      "production staff",
+      "studio and metadata",
+      "episode guide",
+      "franchise relations"
+    ],
+    "description": "Verifies a catalogue title opens a rich profile and displays its available credits and episode information.",
     "steps": [
       "Open Discover",
-      "Wait for AniList catalogue"
+      "Open a popular anime title",
+      "Wait for its full title dossier to load",
+      "Review cast, voice actors, staff, studio, episode and relation sections"
     ],
-    "expected": "Anime titles, cover art and scores appear.",
-    "sanity": true
+    "expected": "The title profile shows synopsis, score, episode count, metadata and any cast, voice actor, staff, episode and franchise details returned by AniList."
   },
   {
-    "name": "Search and genre filter",
+    "name": "Save an anime and track watch progress",
     "viewport": "desktop",
-    "description": "Check title search and genre filtering.",
+    "covers": [
+      "personal library",
+      "save and remove title",
+      "watch status changes",
+      "episode progress tracking",
+      "local browser persistence"
+    ],
+    "description": "Verifies a title can be saved, assigned a watch status, and tracked in the personal library.",
+    "steps": [
+      "Save an anime from its title card",
+      "Open My Library",
+      "Open the saved title",
+      "Change its status to Watching",
+      "Increase the watched episode count",
+      "Refresh the page"
+    ],
+    "expected": "The saved anime, selected status and episode progress remain visible after refresh."
+  },
+  {
+    "name": "Search, filter and sort anime",
+    "viewport": "desktop",
+    "covers": [
+      "anime title search",
+      "genre filtering",
+      "format filter",
+      "year filter",
+      "catalogue sorting"
+    ],
+    "description": "Verifies catalogue discovery controls narrow and reorder results.",
     "steps": [
       "Search for Naruto",
       "Submit the search",
-      "Select Action genre"
+      "Open Filters and choose TV format",
+      "Choose a release year",
+      "Change sorting to Top rated"
     ],
-    "expected": "The catalogue updates to matching anime."
+    "expected": "The visible catalogue reflects the submitted title search and selected filters and sort order."
   },
   {
-    "name": "Save to personal library",
-    "viewport": "desktop",
-    "description": "Check local watchlist persistence.",
-    "steps": [
-      "Bookmark an anime",
-      "Open My Library",
-      "Refresh the page"
-    ],
-    "expected": "Saved anime remains in My Library."
-  },
-  {
-    "name": "Responsive navigation",
+    "name": "Handle an empty search and mobile navigation",
     "viewport": "mobile",
-    "description": "Check mobile menu and responsive catalogue.",
-    "steps": [
-      "Open at a mobile viewport",
-      "Open menu",
-      "Select Seasonal"
+    "covers": [
+      "empty search state",
+      "clear filters",
+      "responsive mobile layout",
+      "mobile navigation"
     ],
-    "expected": "Menu opens and seasonal anime view is accessible."
+    "description": "Verifies an unmatched search gives a recoverable empty state and the mobile navigation remains usable.",
+    "steps": [
+      "Open the site at a mobile viewport",
+      "Search for a deliberately unmatched title",
+      "Submit the search",
+      "Verify the empty state",
+      "Choose Explore anime to return to Discover"
+    ],
+    "expected": "An understandable empty state appears without a crash, and the user can return to the discovery catalogue."
   }
 ]

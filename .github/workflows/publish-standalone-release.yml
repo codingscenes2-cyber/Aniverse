@@ -6,12 +6,12 @@ on:
       tag_name:
         description: "Git tag to create"
         required: true
-        default: "standalone-v1.0.0"
+        default: "standalone-v1.1.0"
         type: string
       release_title:
         description: "GitHub release title"
         required: true
-        default: "ANIVERSE Standalone Site v1.0.0"
+        default: "ANIVERSE Standalone Site v1.1.0"
         type: string
       prerelease:
         description: "Mark this release as a prerelease"

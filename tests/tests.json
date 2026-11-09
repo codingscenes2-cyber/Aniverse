@@ -1,26 +1,24 @@
 [
   {
-    "name": "Premium home experience and live catalogue signals",
+    "name": "Premium discovery and live catalogue signals",
     "sanity": true,
     "viewport": "desktop",
     "covers": [
       "cinematic home hero",
-      "live trending count",
-      "seasonal picks count",
+      "live trending and seasonal counts",
       "personal library count",
       "responsive editorial layout"
     ],
-    "description": "Checks the redesigned discovery landing page uses live AniList-backed collections and personal library data.",
+    "description": "Verifies the redesigned home renders live AniList collections and personal library signals.",
     "steps": [
       "Open Discover on desktop",
-      "Wait for trending and seasonal collections to load",
-      "Review the hero, live signal strip, mood shortcuts and trending shelf"
+      "Wait for trending and seasonal collections",
+      "Review hero, live signals, mood shortcuts and trending shelf"
     ],
-    "expected": "The redesigned home renders without layout errors and shows live counts when AniList collections are available."
+    "expected": "The home experience renders without errors and live counts appear when catalogue data is available."
   },
   {
-    "name": "Browse an anime dossier on mobile",
-    "sanity": true,
+    "name": "Anime dossier on mobile",
     "viewport": "mobile",
     "covers": [
       "mobile title dossier",
@@ -30,35 +28,33 @@
       "franchise relations",
       "responsive title details"
     ],
-    "description": "Checks the redesigned title profile remains readable and scrollable on a phone.",
+    "description": "Checks the title profile remains readable and scrollable on a phone.",
     "steps": [
-      "Open the site at a mobile viewport",
+      "Open the site at mobile width",
       "Open a popular anime title",
-      "Wait for its title dossier to load",
-      "Scroll through cast, credits, episode guide and relations"
+      "Review metadata, cast, credits, episode guide and relations"
     ],
-    "expected": "The dossier fits the mobile viewport, remains scrollable and presents available metadata without horizontal overflow."
+    "expected": "The dossier remains readable and scrollable without horizontal overflow."
   },
   {
-    "name": "Save an anime and track watch progress",
+    "name": "Save and track anime progress",
     "viewport": "desktop",
     "covers": [
       "personal library",
       "save and remove title",
       "watch status changes",
       "episode progress tracking",
-      "local browser persistence"
+      "local persistence"
     ],
-    "description": "Verifies a title can be saved, assigned a watch status, and tracked in the personal library.",
+    "description": "Verifies saved anime status and watched episode progress persist after refresh.",
     "steps": [
-      "Save an anime from its title card",
+      "Save an anime",
       "Open My Library",
-      "Open the saved title",
-      "Change its status to Watching",
-      "Increase the watched episode count",
+      "Set status to Watching",
+      "Increase watched episode count",
       "Refresh the page"
     ],
-    "expected": "The saved anime, selected status and episode progress remain visible after refresh."
+    "expected": "The title, status and progress remain in the library after refresh."
   },
   {
     "name": "Search, filter and sort anime",
@@ -73,30 +69,49 @@
     "description": "Verifies catalogue discovery controls narrow and reorder results.",
     "steps": [
       "Search for Naruto",
-      "Submit the search",
-      "Open Filters and choose TV format",
-      "Choose a release year",
-      "Change sorting to Top rated"
+      "Submit search",
+      "Filter to TV format and a release year",
+      "Sort by Top rated"
     ],
-    "expected": "The visible catalogue reflects the submitted title search and selected filters and sort order."
+    "expected": "Visible results reflect the query, filters and selected sort order."
   },
   {
-    "name": "Handle empty search and mobile navigation",
+    "name": "Franchise release-order guide",
     "viewport": "mobile",
     "covers": [
-      "empty search state",
-      "clear filters",
-      "responsive mobile layout",
-      "mobile navigation"
+      "anime franchise relations",
+      "release-year metadata",
+      "chronological sorting",
+      "relationship labels",
+      "mobile relation navigation"
     ],
-    "description": "Verifies an unmatched search gives a recoverable empty state and mobile navigation remains usable.",
+    "description": "Checks related anime are presented in known release-year order with their relation type and year.",
     "steps": [
-      "Open the site at a mobile viewport",
-      "Search for a deliberately unmatched title",
-      "Submit the search",
-      "Verify the empty state",
-      "Choose Explore anime to return to Discover"
+      "Open a popular anime with multiple franchise relations",
+      "Scroll to Franchise connections",
+      "Check the displayed order, year and relationship label",
+      "Open a related title"
     ],
-    "expected": "An understandable empty state appears without a crash, and the user can return to the discovery catalogue."
+    "expected": "Related anime are sorted by known release year, unknown years appear last, and selecting a relation opens its title dossier."
+  }
+  {
+    "name": "Airing calendar and library overview",
+    "viewport": "mobile",
+    "covers": [
+      "upcoming episode schedule",
+      "airing date and time display",
+      "seasonal title navigation",
+      "library totals",
+      "completed and watching counts",
+      "episode totals"
+    ],
+    "description": "Verifies the new airing calendar and personal library summary use available catalogue and saved data.",
+    "steps": [
+      "Open Airing Calendar from navigation",
+      "Review titles with upcoming airing data",
+      "Open My Library",
+      "Review total, completed, watching and logged episode counts"
+    ],
+    "expected": "The calendar lists available upcoming episodes in chronological order, and library summary counts reflect saved entries."
   }
 ]
